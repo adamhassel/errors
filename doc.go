@@ -11,7 +11,7 @@ The Standard Library allows you to wrap exactly ONE error with eg
 
 A construed (well, kinda) could be a situation where a bunch of different functions are called, and if failing, returns a common error that is handled further up the stack:
 
-```go
+```golang
 if err := someFunc(); err != nil {
 	// MyError is handled up the stack
 	return MyError
@@ -20,7 +20,7 @@ if err := someFunc(); err != nil {
 
 This discards information about the actual error, though. Now, normally, you'd do something like:
 
-```go
+```golang
 	return fmt.Errorf("%s: %w", err, MyError)
 ```
 
@@ -30,7 +30,7 @@ So, if the error above was e.g. `mysql.ErrNotFound`, `errors.Is(err, mysql.ErrNo
 
 Instead, using `errors.Wrap`:
 
-```go
+```golang
 if err := someFunc(); err != nil {
 	// MyError is handled explicitly up the stack
 	return errors.Wrap(err, MyError)
