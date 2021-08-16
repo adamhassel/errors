@@ -1,9 +1,8 @@
 # errors
 
-[![codecov](https://codecov.io/gh/./branch/master/graph/badge.svg)](https://codecov.io/gh/.)
-[![golangci](https://golangci.com/badges/..svg)](https://golangci.com/r/.)
-[![GoDoc](https://img.shields.io/badge/pkg.go.dev-doc-blue)](http://pkg.go.dev/.)
-[![Go Report Card](https://goreportcard.com/badge/.)](https://goreportcard.com/report/.)
+[![Build Status](https://travis-ci.org/adamhassel/errors.svg?branch=master)](https://travis-ci.org/adamhassel/errors)
+[![codecov](https://codecov.io/gh/adamhassel/errors/branch/master/graph/badge.svg)](https://codecov.io/gh/adamhassel/errors)
+[![GoDoc](https://img.shields.io/badge/pkg.go.dev-doc-blue)](http://pkg.go.dev/github.com/adamhassel/errors)
 
 Package errors implements a stdlib-compatible way of wrapping more than
 one error into an error chain, while supporting `errors.Is` and `errors.As` (and
@@ -11,7 +10,7 @@ obviously `Error()` and `Unwrap()`), thus being a drop in replacement for other
 error types. Errors also provides a `New()` function which works like the stdlib version.
 
 The Standard Library allows you to wrap exactly ONE error with eg
-`fmt.Errorf`, and will bail out if there are more than one `%w` receiver.
+`fmt.Errorf`, and will bail out if there are more than one `%!(NOVERB)w` receiver.
 
 `errors.Wrap` will solve that by allowing arbitrary errors to be wrapped without losing information.
 
@@ -30,7 +29,7 @@ This discards information about the actual error, though. Now, normally, you'd d
 ```
 
 ```go
-return fmt.Errorf("%s: %w", err, MyError)
+return fmt.Errorf("%!(NOVERB)s: %!(NOVERB)w", err, MyError)
 ```
 
 ```
