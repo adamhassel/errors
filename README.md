@@ -48,7 +48,5 @@ This will make `errors.Is` return true for both, as they are now both properly w
 
 `Unwrap` and `Wrap` both run in O(n) time, where n is the number of errors added to the chain.
 
-The package is safe for concurrent use.
-
 ---
 Readme created from Go doc with [goreadme](https://github.com/posener/goreadme)
