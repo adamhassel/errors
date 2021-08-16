@@ -60,7 +60,7 @@ New is a wrapper around the stdlib errors.New function
 `func Wrap(errs ...error) error`
 
 Wrap will wrap one or more errors into a single error chain, compatible with
-errors.As, errors.Is. Note that if you're using this as a sort of `append`
+`errors.As` and `errors.Is`. Note that if you're using this as a sort of `append`
 analogue (`err = Wrap(err, ErrAnother)` or similar, where the result
 overwrites the argument), then you should protect accordingly with appropriate
 synchronization measures (e.g. a mutex), just as you would with `append`.
