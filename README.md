@@ -15,18 +15,23 @@ The Standard Library allows you to wrap exactly ONE error with eg
 `errors.Wrap` will solve that by allowing arbitrary errors to be wrapped without losing information.
 
 A construed (well, kinda) could be a situation where a bunch of different functions are called, and if failing, returns a common error that is handled further up the stack:
+```
+if err := someFunc(); err != nil {
 
 ```go
-if err := someFunc(); err != nil {
 // MyError is handled up the stack
 return MyError
-}
 ```
 
+}
+```
 This discards information about the actual error, though. Now, normally, you'd do something like:
+```
 
 ```go
 return fmt.Errorf("%!(NOVERB)s: %!(NOVERB)w", err, MyError)
+```
+
 ```
 
 And while this wraps `MyError`, it doesn't wrap the actual error from `someFunc, which we might be interested in as well, maybe because some specific error requires specific handling:
@@ -35,11 +40,13 @@ So, if the error above was e.g. `mysql.ErrNotFound`, `errors.Is(err, mysql.ErrNo
 
 Instead, using `errors.Wrap`:
 
-```go
+```
 if err := someFunc(); err != nil {
 
+```go
 // MyError is handled explicitly up the stack
 return errors.Wrap(err, MyError)
+```
 
 }
 ```
