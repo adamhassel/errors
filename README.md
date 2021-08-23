@@ -1,9 +1,8 @@
 # errors
 
 [![codecov](https://codecov.io/gh/./branch/master/graph/badge.svg)](https://codecov.io/gh/.)
-[![golangci](https://golangci.com/badges/..svg)](https://golangci.com/r/.)
 [![GoDoc](https://img.shields.io/badge/pkg.go.dev-doc-blue)](http://pkg.go.dev/.)
-[![Go Report Card](https://goreportcard.com/badge/.)](https://goreportcard.com/report/.)
+[![Go Report Card](https://goreportcard.com/badge/.)](https://goreportcard.com/report/github.com/adamhassel/errors)
 
 Package errors implements a stdlib-compatible way of wrapping more than
 one error into an error chain, while supporting `errors.Is` and `errors.As` (and
