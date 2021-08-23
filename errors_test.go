@@ -32,23 +32,23 @@ func TestWrap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "several",
-			args: args{errs: []error{Err1, Err2, Err3}},
+			name:    "several",
+			args:    args{errs: []error{Err1, Err2, Err3}},
 			wantErr: true,
 		},
 		{
-			name: "one",
-			args: args{errs: []error{Err1}},
+			name:    "one",
+			args:    args{errs: []error{Err1}},
 			wantErr: true,
 		},
 		{
-			name: "two",
-			args: args{errs: []error{Err2, Err3}},
+			name:    "two",
+			args:    args{errs: []error{Err2, Err3}},
 			wantErr: true,
 		},
 		{
-			name: "none",
-			args: args{errs: nil},
+			name:    "none",
+			args:    args{errs: nil},
 			wantErr: false,
 		},
 	}
@@ -60,7 +60,7 @@ func TestWrap(t *testing.T) {
 						t.Errorf("err %q was not wrapped in %q", e, err)
 					}
 					if errors.Is(err, Err1) {
-						var foo = CustomErr{e: fmt.Errorf("err1") }
+						var foo = CustomErr{e: fmt.Errorf("err1")}
 						if !errors.As(err, &foo) {
 							t.Errorf("Err1 was not recognized as a CustomErr")
 						}
@@ -75,7 +75,7 @@ func TestWrap(t *testing.T) {
 
 func Test_echain_Error(t *testing.T) {
 	type fields struct {
-		err  error
+		err error
 	}
 	tests := []struct {
 		name   string
@@ -83,9 +83,9 @@ func Test_echain_Error(t *testing.T) {
 		want   string
 	}{
 		{
-			name: "single",
+			name:   "single",
 			fields: fields{err: Wrap(errors.New("a"))},
-			want: "a",
+			want:   "a",
 		},
 		{
 			name:   "single specific echain",
@@ -93,24 +93,24 @@ func Test_echain_Error(t *testing.T) {
 			want:   "b",
 		},
 		{
-			name: "none",
+			name:   "none",
 			fields: fields{err: Wrap(nil)},
-			want: "",
+			want:   "",
 		},
 		{
-			name: "two",
+			name:   "two",
 			fields: fields{err: Wrap(errors.New("a"), errors.New("b"))},
-			want: "a: b",
+			want:   "a: b",
 		},
 		{
-			name: "five",
+			name:   "five",
 			fields: fields{err: Wrap(errors.New("a"), errors.New("b"), errors.New("c"), errors.New("d"), errors.New("e"))},
-			want: "a: b: c: d: e",
+			want:   "a: b: c: d: e",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ec :=  tt.fields.err
+			ec := tt.fields.err
 			if ec == nil {
 				return
 			}
@@ -123,7 +123,7 @@ func Test_echain_Error(t *testing.T) {
 
 func Test_echain_Unwrap(t *testing.T) {
 	type fields struct {
-		err  error
+		err error
 	}
 	tests := []struct {
 		name    string
@@ -131,18 +131,18 @@ func Test_echain_Unwrap(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "regular error",
-			fields: fields{err: errors.New("regular")},
+			name:    "regular error",
+			fields:  fields{err: errors.New("regular")},
 			wantErr: true,
 		},
 		{
-			name: "nil",
-			fields: fields{err: nil},
+			name:    "nil",
+			fields:  fields{err: nil},
 			wantErr: false,
 		},
 		{
-			name: "wrapped error",
-			fields: fields{err: Wrap(errors.New("a"), errors.New("b"))},
+			name:    "wrapped error",
+			fields:  fields{err: Wrap(errors.New("a"), errors.New("b"))},
 			wantErr: true,
 		},
 	}
