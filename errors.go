@@ -45,8 +45,8 @@ func (ec *echain) Error() string {
 }
 
 // As is the implementation of errors.As, ensuring the chain works
-func (ec *echain) As(target error) bool {
-	return errors.As(ec.err, target)
+func (ec *echain) As(target interface{}) bool {
+	return errors.As(ec.err, &target)
 }
 
 // Is is the implementation of errors.Is, ensuring that the chain works
