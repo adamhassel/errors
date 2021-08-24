@@ -1,6 +1,6 @@
 # errors
 
-[![codecov](https://codecov.io/gh/./branch/master/graph/badge.svg)](https://codecov.io/gh/.)
+[![codecov](https://codecov.io/gh/adamhassel/errors/branch/main/graph/badge.svg?token=Eo4O4BXZ2N)](https://codecov.io/gh/adamhassel/errors)
 [![GoDoc](https://img.shields.io/badge/pkg.go.dev-doc-blue)](http://pkg.go.dev/.)
 [![Go Report Card](https://goreportcard.com/badge/github.com/adamhassel/errors)](https://goreportcard.com/report/github.com/adamhassel/errors)
 
