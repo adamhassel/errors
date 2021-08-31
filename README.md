@@ -14,7 +14,9 @@ The Standard Library allows you to wrap exactly ONE error with eg
 
 `errors.Wrap` will solve that by allowing arbitrary errors to be wrapped without losing information.
 
-A construed (well, kinda) could be a situation where a bunch of different functions are called, and if failing, returns a common error that is handled further up the stack:
+This is useful e.g. when collecting errors from several running go routines that might return a bunch of different errors.
+
+Another slightly construed use case could be a situation where a bunch of different functions are called, and if failing, returns a common error that is handled further up the stack:
 
 ```golang
 if err := someFunc(); err != nil {
