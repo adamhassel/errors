@@ -25,7 +25,7 @@ if err := someFunc(); err != nil {
 }
 ```
 
-Up the stack, you don't want to check for any possible error. You just know that if you get `MyError`, you're handling things one way, and if you get any other error, you handle it differently. But this approach, while convenient, discards information about the actual error, though. Now, normally, you'd do something like:
+Up the stack, you don't want to check for any possible error. You just know that if you get `MyError`, you're handling things one way, and if you get any other error, you handle it differently. But this approach, while convenient, discards information about the actual error, though. Now, normally, you'd log it at the source at the risk of it being logged again later, or do something like:
 
 ```golang
 return fmt.Errorf("%s: %w", err, MyError)
