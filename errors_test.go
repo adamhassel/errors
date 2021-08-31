@@ -24,7 +24,7 @@ func TestWrap(t *testing.T) {
 
 	var Err1 = CustomErr{e: fmt.Errorf("err1")}
 	var Err2 = fmt.Errorf("err2")
-	var Err3 = fmt.Errorf("err3")
+	var Err3 = errors.New("err3")
 
 	tests := []struct {
 		name    string
@@ -163,4 +163,40 @@ func Test_echain_Unwrap(t *testing.T) {
 			}
 		})
 
+}
+
+// local implementation of stlib's errors.New
+func localNew(text string) error {
+	return &errorString{text}
+}
+
+// errorString is a trivial implementation of error.
+type errorString struct {
+	s string
+}
+
+func (e *errorString) Error() string {
+	return e.s
+}
+
+func Test_stdlib_interaction(t *testing.T) {
+	stderr := errors.New("stderr")
+	lstderr := localNew("almoststderr")
+	myerr := &echain{err: errors.New("myerr")}
+	wrapped := Wrap(stderr, myerr, lstderr)
+	if !errors.Is(wrapped, stderr) {
+		t.Errorf("couldn't find %s in chain", stderr)
+	}
+	if !errors.Is(wrapped, lstderr) {
+		t.Errorf("couldn't find %s in chain", lstderr)
+	}
+	if !errors.Is(wrapped, myerr) {
+		t.Errorf("couldn't find %s in chain", myerr)
+	}
+	if !errors.As(wrapped, new(*echain)) {
+		t.Errorf("couldn't find type %T in chain", new(*echain))
+	}
+	if !errors.As(wrapped, new(*errorString)) {
+		t.Errorf("couldn't find type %T in chain", new(*errorString))
+	}
 }
