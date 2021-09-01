@@ -50,12 +50,6 @@ This will make `errors.Is` return true for both, as they are now both properly w
 
 ## Functions
 
-### func [New](/errors.go#L88)
-
-`func New(text string) error`
-
-New is a wrapper around the stdlib errors.New function
-
 ### func [Wrap](/errors.go#L73)
 
 `func Wrap(errs ...error) error`
