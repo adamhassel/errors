@@ -7,7 +7,7 @@
 Package errors implements a stdlib-compatible way of wrapping more than
 one error into an error chain, while supporting `errors.Is` and `errors.As` (and
 obviously `Error()` and `Unwrap()`), thus being a drop in replacement for other
-error types. Errors also provides a `New()` function which works like the stdlib version.
+error types. Errors also provides all the stdlib functions, so you don't need to include both.
 
 The Standard Library allows you to wrap exactly ONE error with eg
 `fmt.Errorf`, and will bail out if there are more than one `%w` receiver.
