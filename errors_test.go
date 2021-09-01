@@ -199,4 +199,21 @@ func Test_stdlib_interaction(t *testing.T) {
 	if !errors.As(wrapped, new(*errorString)) {
 		t.Errorf("couldn't find type %T in chain", new(*errorString))
 	}
+
+	if !Is(wrapped, stderr) {
+		t.Errorf("couldn't find %s in chain", stderr)
+	}
+	if !Is(wrapped, lstderr) {
+		t.Errorf("couldn't find %s in chain", lstderr)
+	}
+	if !Is(wrapped, myerr) {
+		t.Errorf("couldn't find %s in chain", myerr)
+	}
+	if !As(wrapped, new(*echain)) {
+		t.Errorf("couldn't find type %T in chain", new(*echain))
+	}
+	if !As(wrapped, new(*errorString)) {
+		t.Errorf("couldn't find type %T in chain", new(*errorString))
+	}
+
 }

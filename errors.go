@@ -83,8 +83,3 @@ func Wrap(errs ...error) error {
 	}
 	return e
 }
-
-// New is a wrapper around the stdlib errors.New function, so you don't need to import both
-func New(text string) error {
-	return errors.New(text)
-}
