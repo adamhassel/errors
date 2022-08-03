@@ -67,7 +67,7 @@ var poserPathErr = &fs.PathError{Op: "poser"}
 
 func (p *poser) Error() string     { return p.msg }
 func (p *poser) Is(err error) bool { return p.f(err) }
-func (p *poser) As(err any) bool {
+func (p *poser) As(err interface{}) bool {
 	switch x := err.(type) {
 	case **poser:
 		*x = p
@@ -91,9 +91,9 @@ func TestAs(t *testing.T) {
 
 	testCases := []struct {
 		err    error
-		target any
+		target interface{}
 		match  bool
-		want   any // value of target on match
+		want   interface{} // value of target on match
 	}{{
 		nil,
 		&errP,
@@ -172,7 +172,7 @@ func TestAs(t *testing.T) {
 
 func TestAsValidation(t *testing.T) {
 	var s string
-	testCases := []any{
+	testCases := []interface{}{
 		nil,
 		(*int)(nil),
 		"error",
@@ -265,14 +265,4 @@ func ExampleAs() {
 
 	// Output:
 	// Failed at path: non-existing
-}
-
-func ExampleUnwrap() {
-	err1 := errors.New("error1")
-	err2 := fmt.Errorf("error2: [%w]", err1)
-	fmt.Println(err2)
-	fmt.Println(errors.Unwrap(err2))
-	// Output
-	// error2: [error1]
-	// error1
 }
