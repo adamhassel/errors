@@ -34,7 +34,6 @@ func (ec *echain) Error() string {
 		return ec.err.Error()
 	}
 	errs := make([]string, 0)
-
 	for ec != nil {
 		if ec.err != nil {
 			errs = append(errs, ec.err.Error())
@@ -55,9 +54,9 @@ func (ec *echain) Is(target error) bool {
 }
 
 // Unwrap makes sure echain can act as a golang error chain
-func (ec *echain) Unwrap() error {
+func (ec *echain) Unwrap() (err error) {
 	if ec == nil {
-		return nil
+		return ec
 	}
 	if ec.next == nil {
 		return ec.err
@@ -74,12 +73,15 @@ func Wrap(errs ...error) error {
 	if len(errs) == 0 {
 		return nil
 	}
-	if len(errs) == 1 {
-		return errs[0]
-	}
-	e := &echain{}
-	for _, err := range errs {
-		e.add(err)
+	var e error
+	for i := range errs {
+		if errs[i] == nil {
+			continue
+		}
+		if e == nil {
+			e = &echain{}
+		}
+		e.(*echain).add(errs[i])
 	}
 	return e
 }

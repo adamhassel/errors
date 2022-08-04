@@ -3,6 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"testing"
 )
 
@@ -15,6 +16,36 @@ func (e CustomErr) Error() string {
 }
 func (e CustomErr) Unwrap() error {
 	return errors.Unwrap(e.e)
+}
+
+func TestEqualityAndNils(t *testing.T) {
+	err1 := New("1")
+	err2 := New("2")
+	erra := Wrap(err1, err2)
+	errb := Wrap(err1, err2)
+	if erra == errb {
+		t.Errorf("errors are identical, but shoulnd't be")
+	}
+
+	if Wrap() != nil {
+		t.Errorf("Empty wrap wasn't nil")
+	}
+	if Wrap(nil) != nil {
+		t.Errorf("Single nil wrap wasn't nil")
+	}
+	if Wrap(nil, nil, nil) != nil {
+		t.Errorf("Multiple nil wrap wasn't nil")
+	}
+	var e error
+	if Wrap(e) != nil {
+		t.Errorf("Single explicit nil err wasn't wrapped as nil")
+	}
+	if Wrap(e, e) != nil {
+		t.Errorf("Multiple explicit nil err wasn't wrapped as nil")
+	}
+	if Wrap(e, nil) != nil {
+		t.Errorf("Single explicit nil err wasn't wrapped with explicit nils as nil")
+	}
 }
 
 func TestWrap(t *testing.T) {
@@ -157,7 +188,7 @@ func Test_echain_Unwrap(t *testing.T) {
 	// also check for true nil
 	t.Run("true nil",
 		func(t *testing.T) {
-			var ec *echain
+			var ec = &echain{}
 			if err := ec.Unwrap(); err != nil {
 				t.Errorf("Unwrap() error = %v", err)
 			}
@@ -216,4 +247,111 @@ func Test_stdlib_interaction(t *testing.T) {
 		t.Errorf("couldn't find type %T in chain", new(*errorString))
 	}
 
+}
+
+type errorUncomparable struct {
+	f []string
+}
+
+func (errorUncomparable) Error() string {
+	return "uncomparable error"
+}
+
+func (errorUncomparable) Is(target error) bool {
+	_, ok := target.(errorUncomparable)
+	return ok
+}
+
+type errorT struct{ s string }
+
+func (e errorT) Error() string { return fmt.Sprintf("errorT(%s)", e.s) }
+
+type poser struct {
+	msg string
+	f   func(error) bool
+}
+
+var poserPathErr = &fs.PathError{Op: "poser"}
+
+func (p *poser) Error() string     { return p.msg }
+func (p *poser) Is(err error) bool { return p.f(err) }
+func (p *poser) As(err interface{}) bool {
+	switch x := err.(type) {
+	case **poser:
+		*x = p
+	case *errorT:
+		*x = errorT{"poser"}
+	case **fs.PathError:
+		*x = poserPathErr
+	default:
+		return false
+	}
+	return true
+}
+func TestIs(t *testing.T) {
+	err1 := errors.New("1")
+	erra := Wrap(errors.New(""), err1)
+	errb := Wrap(errors.New(""), erra)
+
+	err3 := errors.New("3")
+
+	poser := &poser{"either 1 or 3", func(err error) bool {
+		return err == err1 || err == err3
+	}}
+
+	testCases := []struct {
+		err    error
+		target error
+		match  bool
+	}{
+		{nil, nil, true},
+		{err1, nil, false},
+		{err1, err1, true},
+		{erra, err1, true},
+		{errb, err1, true},
+		{err1, err3, false},
+		{erra, err3, false},
+		{errb, err3, false},
+		{poser, err1, true},
+		{poser, err3, true},
+		{poser, erra, false},
+		{poser, errb, false},
+		{errorUncomparable{}, errorUncomparable{}, true},
+		{errorUncomparable{}, &errorUncomparable{}, false},
+		{&errorUncomparable{}, errorUncomparable{}, true},
+		{&errorUncomparable{}, &errorUncomparable{}, false},
+		{errorUncomparable{}, err1, false},
+		{&errorUncomparable{}, err1, false},
+	}
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			if got := errors.Is(tc.err, tc.target); got != tc.match {
+				t.Errorf("Is(%v, %v) = %v, want %v", tc.err, tc.target, got, tc.match)
+			}
+		})
+	}
+}
+
+func TestUnwrap(t *testing.T) {
+	err1 := errors.New("1")
+	err2 := errors.New("2")
+	erra := Wrap(nil, err1)
+
+	testCases := []struct {
+		err  error
+		want error
+	}{
+		{nil, nil},
+		{Wrap(nil), nil},
+		{err1, nil},
+		{erra, err1},
+		{Wrap(erra), erra},
+		{Wrap(erra, err2), erra},
+		{Wrap(erra, err2), err2},
+	}
+	for i, tc := range testCases {
+		if got := errors.Unwrap(tc.err); !errors.Is(got, tc.want) {
+			t.Errorf("%d: Unwrap(%v/%p) = %v/%p, want %v/%p", i, tc.err, tc.err, got, got, tc.want, tc.want)
+		}
+	}
 }
