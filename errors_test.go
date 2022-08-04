@@ -188,7 +188,7 @@ func Test_echain_Unwrap(t *testing.T) {
 	// also check for true nil
 	t.Run("true nil",
 		func(t *testing.T) {
-			var ec = &echain{}
+			var ec *echain
 			if err := ec.Unwrap(); err != nil {
 				t.Errorf("Unwrap() error = %v", err)
 			}

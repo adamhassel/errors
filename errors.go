@@ -56,7 +56,7 @@ func (ec *echain) Is(target error) bool {
 // Unwrap makes sure echain can act as a golang error chain
 func (ec *echain) Unwrap() (err error) {
 	if ec == nil {
-		return ec
+		return nil
 	}
 	if ec.next == nil {
 		return ec.err
