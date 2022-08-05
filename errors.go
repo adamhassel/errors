@@ -2,7 +2,6 @@ package errors
 
 import (
 	"errors"
-	"strings"
 )
 
 // echain is a linked list (kinda) containing errors. But since echain is an
@@ -15,9 +14,25 @@ type echain struct {
 	next *echain
 }
 
-// Separator between errors in the chain when they're output together with
-// `.Error()`. Can be overridden globally by setting this value, default is ": ".
-var Separator = ": "
+// Slice converts an error chain to a slice of errors
+func (ec *echain) Slice() []error {
+	out := make([]error, 0, 1)
+	out = append(out, ec.err)
+	if ec.next != nil {
+		out = append(out, ec.next.Slice()...)
+	}
+	return out
+}
+
+// Len computes the length of an error chain
+func (ec *echain) Len() int {
+	var out = 1 // count the err in this link, even if it's nil
+	if ec.next != nil {
+		out++
+		out += ec.next.Len()
+	}
+	return out
+}
 
 // add an error to the chain. Locked from caller.
 func (ec *echain) add(err error) {
@@ -30,17 +45,7 @@ func (ec *echain) add(err error) {
 
 // Error implements the error interface
 func (ec *echain) Error() string {
-	if ec.next == nil {
-		return ec.err.Error()
-	}
-	errs := make([]string, 0)
-	for ec != nil {
-		if ec.err != nil {
-			errs = append(errs, ec.err.Error())
-		}
-		ec = ec.next
-	}
-	return strings.Join(errs, Separator)
+	return ErrorFormatter(ec.Slice())
 }
 
 // As is the implementation of errors.As, ensuring the chain works
